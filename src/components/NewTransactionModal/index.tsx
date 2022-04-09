@@ -5,7 +5,7 @@ import { Container, TransactionTypeContainer, ButtonType } from "./styles";
 import closeImg from "../../assets/close.svg";
 import incomeImg from "../../assets/income.svg";
 import outcomeImg from "../../assets/outcome.svg";
-import { api } from "../../services/api";
+import { useTransactions } from "../../hooks/useTransactions";
 
 interface NewTransactionModalProps {
   isOpen: boolean;
@@ -21,17 +21,23 @@ export function NewTransactionModal({
   const [amount, setAmount] = useState<number>(0);
   const [category, setCategory] = useState<string>("");
 
-  function handleCreateNewTransaction(event: FormEvent) {
+  const { createTransaction } = useTransactions();
+
+  async function handleCreateNewTransaction(event: FormEvent) {
     event.preventDefault();
 
-    const data = {
+    await createTransaction({
       title,
       amount,
       type,
       category,
-    };
+    });
 
-    api.post("transactions", data);
+    setTitle("");
+    setCategory("");
+    setAmount(0);
+    setType("deposit");
+    onRequestClose();
   }
 
   return (
